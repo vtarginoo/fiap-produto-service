@@ -1,11 +1,14 @@
 package br.com.postechfiap.fiap_produto_service.controller;
 
 
+import br.com.postechfiap.fiap_produto_service.dto.AtualizarProdutoDTO;
 import br.com.postechfiap.fiap_produto_service.dto.ListaProdutoResponse;
 import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
 import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
+import br.com.postechfiap.fiap_produto_service.interfaces.usecases.AtualizarProdutoUseCase;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.BuscarProdutoUseCase;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.CadastrarProdutoUseCase;
+import br.com.postechfiap.fiap_produto_service.interfaces.usecases.DeletarProdutoUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +29,8 @@ public class ProdutoController {
 
     private final CadastrarProdutoUseCase cadastrarProdutoUseCase;
     private final BuscarProdutoUseCase buscarProdutoUseCase;
+    private final AtualizarProdutoUseCase atualizarProdutoUseCase;
+    private final DeletarProdutoUseCase deletarProdutoUseCase;
 
 
     @PostMapping
@@ -51,6 +56,24 @@ public class ProdutoController {
 
         return ResponseEntity.ok(listaProduto);
     }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar Produto", description = "Atualizar nome e/ou preço de um produto")
+    public ResponseEntity<ProdutoResponse> atualizarProduto (@PathVariable Long id,
+                                                                  @Valid @RequestBody ProdutoRequest dto) {
+
+        var produto = atualizarProdutoUseCase.execute(new AtualizarProdutoDTO(id,dto));
+
+        return ResponseEntity.ok(produto);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar Produto", description = "Remove um produto pelo ID e retorna uma mensagem de confirmação.")
+    public ResponseEntity<String> deletarProduto(@PathVariable Long id) {
+        String mensagem = deletarProdutoUseCase.execute(id);
+        return ResponseEntity.ok(mensagem);
+    }
+
 
 
 

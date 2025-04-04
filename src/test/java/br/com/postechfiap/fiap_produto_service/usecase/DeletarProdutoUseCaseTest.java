@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class DeletarProdutoUseCaseTest {
 
@@ -54,7 +56,7 @@ public class DeletarProdutoUseCaseTest {
         var exception = assertThrows(RuntimeException.class,
                 () -> deletarProdutoUseCase.execute(produtoId));
 
-        assertEquals("Produto não encontrado", exception.getMessage());
+        assertEquals("Produto não encontrado.", exception.getMessage());
 
         verify(produtoRepository, times(1)).findById(produtoId);
         verify(produtoRepository, never()).delete(any(Produto.class));

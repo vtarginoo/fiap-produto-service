@@ -65,16 +65,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ResponseError> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ResponseError errorResponse = new ResponseError(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                "Violação de integridade de dados. Verifique se os dados enviados estão corretos."
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseError> handleGenericException(Exception ex) {

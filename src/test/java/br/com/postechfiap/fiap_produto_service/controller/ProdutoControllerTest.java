@@ -12,9 +12,7 @@ import br.com.postechfiap.fiap_produto_service.interfaces.usecases.BuscarProduto
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.CadastrarProdutoUseCase;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.DeletarProdutoUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,7 +42,7 @@ class ProdutoControllerTest {
     private ProdutoController produtoController;
 
     @Autowired
-    private ProdutoRepository produtoRepository; // Injetando o repositório
+    private ProdutoRepository produtoRepository;
 
     @Mock
     private CadastrarProdutoUseCase cadastrarProdutoUseCase;
@@ -60,23 +58,12 @@ class ProdutoControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static Produto produtoTeste; // Variável estática para o produto de teste
-
-    @BeforeAll
-    static void setup(@Autowired ProdutoRepository staticProdutoRepository) {
-        produtoTeste = new Produto();
-        produtoTeste.setNome("Produto Teste");
-        produtoTeste.setPreco(100.0);
-        produtoTeste.setCreatedAt(LocalDateTime.now());
-        staticProdutoRepository.save(produtoTeste);
-    }
-
     @DisplayName("1.1 Cadastrar Produto - Sucesso")
     @Test
     void deveCadastrarProdutoComSucesso() throws Exception {
         // Arrange
-        var produtoRequest = new ProdutoRequest("Produto Teste", 100.0);
-        var produtoResponse = new ProdutoResponse(2L, "Produto Teste", "SKU123", 100.0);
+        var produtoRequest = new ProdutoRequest("Produto Cadastrado", 100.0);
+        var produtoResponse = new ProdutoResponse(2L, "Produto Cadastrado", "SKU123", 100.0);
 
         when(cadastrarProdutoUseCase.execute(any(ProdutoRequest.class)))
                 .thenReturn(produtoResponse);
@@ -87,8 +74,7 @@ class ProdutoControllerTest {
                         .content(objectMapper.writeValueAsString(produtoRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("$.id").value(2))
-                .andExpect(jsonPath("$.nome").value("Produto Teste"))
+                .andExpect(jsonPath("$.nome").value("Produto Cadastrado"))
                 .andExpect(jsonPath("$.preco").value(100.0));
     }
 
@@ -97,16 +83,16 @@ class ProdutoControllerTest {
     void deveBuscarProdutoComSucesso() throws Exception {
         // Arrange
         var listaProdutoResponse = new ListaProdutoResponse(
-                List.of(new ProdutoResponse(1L, "Produto Teste", "SKU123", 100.0)));
+                List.of(new ProdutoResponse(1L, "Cadeira Gamer Ergonômica", "CAD-GAM-ERG6", 599.0)));
 
-        when(buscarProdutoUseCase.execute("Produto Teste")).thenReturn(listaProdutoResponse);
+        when(buscarProdutoUseCase.execute("Cadeira")).thenReturn(listaProdutoResponse);
 
         // Act & Assert
         mockMvc.perform(get("/produto")
-                        .param("query", "Produto Teste"))
+                        .param("query", "Cadeira"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.produtos[0].id").value(1))
-                .andExpect(jsonPath("$.produtos[0].nome").value("Produto Teste"));
+                .andExpect(jsonPath("$.produtos[0].id").value(6))
+                .andExpect(jsonPath("$.produtos[0].nome").value("Cadeira Gamer Ergonômica"));
     }
 
     @Test
@@ -123,19 +109,21 @@ class ProdutoControllerTest {
     void deveAtualizarProdutoComSucesso() throws Exception {
         // Arrange
         var produtoRequest = new ProdutoRequest("Produto Atualizado", 150.0);
-        var produtoResponse = new ProdutoResponse(1L, "Produto Atualizado", "SKU123", 150.0);
+        var produtoResponse = new ProdutoResponse(4L, "Produto Atualizado", "SKU123", 150.0);
 
         when(atualizarProdutoUseCase.execute(any(AtualizarProdutoDTO.class)))
                 .thenReturn(produtoResponse);
 
         // Act & Assert
-        mockMvc.perform(put("/produto/{id}", 1L)
+        mockMvc.perform(put("/produto/{id}", 4L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(produtoRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(4L))
                 .andExpect(jsonPath("$.nome").value("Produto Atualizado"))
                 .andExpect(jsonPath("$.preco").value(150.0));
+
+
     }
 
     @Test
@@ -161,14 +149,21 @@ class ProdutoControllerTest {
     @DisplayName("4.1 Deletar Produto - Sucesso")
     void deveDeletarProdutoComSucesso() throws Exception {
         // Arrange
-        Long produtoId = 1L;
+        var produtoReposicao = Produto.builder().nome("Mesa de Cabeceira").preco(100.0).build();
+
+         produtoReposicao = produtoRepository.save(produtoReposicao);
+
+         Long produtoId = produtoReposicao.getId();
+
         String mensagem = "Produto com ID " + produtoId + " foi deletado com sucesso!";
+
         when(deletarProdutoUseCase.execute(produtoId)).thenReturn(mensagem);
 
         // Act & Assert
         mockMvc.perform(delete("/produto/{id}", produtoId))
                 .andExpect(status().isOk())
                 .andExpect(content().string(mensagem));
+
     }
 
     @Test

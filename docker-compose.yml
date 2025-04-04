@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: fiap-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: fiap-produto-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - fiap-network
+
+  fiap-produto-service:
+    image: fiap-produto-service:latest
+    container_name: fiap-produto-service
+    build:
+      context: .
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: fiap-produto-service
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - fiap-network
+
+volumes:
+  pgdata:
+
+networks:
+  fiap-network:

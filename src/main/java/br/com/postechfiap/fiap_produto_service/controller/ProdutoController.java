@@ -52,6 +52,10 @@ public class ProdutoController {
     @Operation(summary = "Buscar Produto", description = "Buscar produto por nome ou sku")
     public ResponseEntity<ListaProdutoResponse> buscarProduto (@RequestParam String query) {
 
+        if (query == null || query.trim().isEmpty()) {
+            throw new IllegalArgumentException("O parâmetro de busca não pode estar vazio.");
+        }
+
         var listaProduto = buscarProdutoUseCase.execute(query);
 
         return ResponseEntity.ok(listaProduto);

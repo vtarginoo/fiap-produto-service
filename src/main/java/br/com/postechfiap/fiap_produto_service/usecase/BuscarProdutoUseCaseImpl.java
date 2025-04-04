@@ -19,6 +19,7 @@ public class BuscarProdutoUseCaseImpl implements BuscarProdutoUseCase {
 
     @Override
     public ListaProdutoResponse execute(String query) {
+
         List<ProdutoResponse> produtos = produtoRepository.findByNomeContainingIgnoreCaseOrSkuIgnoreCase(query, query)
                 .stream()
                 .map(produto -> new ProdutoResponse(produto.getId(),

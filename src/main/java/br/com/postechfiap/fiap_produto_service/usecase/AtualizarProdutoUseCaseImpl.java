@@ -1,7 +1,7 @@
 package br.com.postechfiap.fiap_produto_service.usecase;
 
 import br.com.postechfiap.fiap_produto_service.dto.AtualizarProdutoDTO;
-import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
+
 import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
 import br.com.postechfiap.fiap_produto_service.exception.produto.ProdutoNotFoundException;
 import br.com.postechfiap.fiap_produto_service.interfaces.ProdutoRepository;

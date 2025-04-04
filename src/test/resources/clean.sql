@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS produto;
+DROP SEQUENCE IF EXISTS produto_id_seq;

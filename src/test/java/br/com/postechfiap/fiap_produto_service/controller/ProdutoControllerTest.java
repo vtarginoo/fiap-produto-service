@@ -1,9 +1,6 @@
 package br.com.postechfiap.fiap_produto_service.controller;
 
-import br.com.postechfiap.fiap_produto_service.dto.AtualizarProdutoDTO;
-import br.com.postechfiap.fiap_produto_service.dto.ListaProdutoResponse;
-import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
-import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
+import br.com.postechfiap.fiap_produto_service.dto.*;
 import br.com.postechfiap.fiap_produto_service.entities.Produto;
 import br.com.postechfiap.fiap_produto_service.exception.produto.ProdutoNotFoundException;
 import br.com.postechfiap.fiap_produto_service.interfaces.ProdutoRepository;
@@ -21,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -63,10 +59,12 @@ class ProdutoControllerTest {
     void deveCadastrarProdutoComSucesso() throws Exception {
         // Arrange
         var produtoRequest = new ProdutoRequest("Produto Cadastrado", 100.0);
-        var produtoResponse = new ProdutoResponse(2L, "Produto Cadastrado", "SKU123", 100.0);
+        var criacaoProdutoResponse = new CriacaoProdutoResponse(2L, "Produto Cadastrado", "SKU123", 100.0,
+                true,
+                "Estoque cadastrado com sucesso.");
 
         when(cadastrarProdutoUseCase.execute(any(ProdutoRequest.class)))
-                .thenReturn(produtoResponse);
+                .thenReturn(criacaoProdutoResponse);
 
         // Act & Assert
         mockMvc.perform(post("/produto")

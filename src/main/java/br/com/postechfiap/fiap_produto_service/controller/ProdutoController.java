@@ -1,10 +1,7 @@
 package br.com.postechfiap.fiap_produto_service.controller;
 
 
-import br.com.postechfiap.fiap_produto_service.dto.AtualizarProdutoDTO;
-import br.com.postechfiap.fiap_produto_service.dto.ListaProdutoResponse;
-import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
-import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
+import br.com.postechfiap.fiap_produto_service.dto.*;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.AtualizarProdutoUseCase;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.BuscarProdutoUseCase;
 import br.com.postechfiap.fiap_produto_service.interfaces.usecases.CadastrarProdutoUseCase;
@@ -35,7 +32,7 @@ public class ProdutoController {
 
     @PostMapping
     @Operation(summary = "Cadastrar Produto", description = "Cadastra novos produtos.")
-    public ResponseEntity<ProdutoResponse> cadastrarNovoProduto (@RequestBody @Valid ProdutoRequest dto) {
+    public ResponseEntity<CriacaoProdutoResponse> cadastrarNovoProduto (@RequestBody @Valid ProdutoRequest dto) {
 
         var novoProduto = cadastrarProdutoUseCase.execute(dto);
 

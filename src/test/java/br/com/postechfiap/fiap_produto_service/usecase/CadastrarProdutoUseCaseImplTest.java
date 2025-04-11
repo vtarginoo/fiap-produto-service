@@ -1,9 +1,13 @@
 package br.com.postechfiap.fiap_produto_service.usecase;
 
+import br.com.postechfiap.fiap_produto_service.dto.CriacaoProdutoResponse;
 import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
 import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
+import br.com.postechfiap.fiap_produto_service.dto.estoque.EstoqueRequest;
+import br.com.postechfiap.fiap_produto_service.dto.estoque.EstoqueResponse;
 import br.com.postechfiap.fiap_produto_service.entities.Produto;
 import br.com.postechfiap.fiap_produto_service.interfaces.ProdutoRepository;
+import br.com.postechfiap.fiap_produto_service.interfaces.client.EstoqueClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +29,9 @@ public class CadastrarProdutoUseCaseImplTest {
     @Mock
     private ProdutoRepository produtoRepository;
 
+    @Mock
+    private EstoqueClient estoqueClient;
+
     @Test
     void deveCadastrarProdutoComSucesso() {
         var produtoRequest = new ProdutoRequest("Produto Teste", 100.0);
@@ -32,7 +39,7 @@ public class CadastrarProdutoUseCaseImplTest {
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
 
-        ProdutoResponse response = cadastrarProdutoUseCase.execute(produtoRequest);
+        CriacaoProdutoResponse response = cadastrarProdutoUseCase.execute(produtoRequest);
 
         assertNotNull(response);
         assertEquals(1L, response.id());
@@ -54,4 +61,39 @@ public class CadastrarProdutoUseCaseImplTest {
 
         assertEquals("Erro ao salvar produto", exception.getMessage());
     }
+
+
+    @Test
+    void deveCadastrarProdutoEEstoqueComSucesso() {
+        var produtoRequest = new ProdutoRequest("Produto Teste", 100.0);
+        var produtoSalvo = new Produto(1L, "Produto Teste", "SKU123", 100.0);
+
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
+        when(estoqueClient.cadastrarEstoque(any(EstoqueRequest.class)))
+                .thenReturn(new EstoqueResponse(1L,"Produto teste", "SKU123",0L));
+
+        CriacaoProdutoResponse response = cadastrarProdutoUseCase.execute(produtoRequest);
+
+        assertTrue(response.estoqueCriado());
+        assertEquals("Estoque cadastrado com sucesso.", response.mensagemEstoque());
+    }
+
+    @Test
+    void deveCadastrarProdutoMasFalharNoEstoque() {
+        var produtoRequest = new ProdutoRequest("Produto com Erro no Estoque", 150.0);
+        var produtoSalvo = new Produto(2L, "Produto com Erro no Estoque", "SKU456", 150.0);
+
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
+        when(estoqueClient.cadastrarEstoque(any(EstoqueRequest.class)))
+                .thenThrow(new RuntimeException("Serviço de estoque indisponível"));
+
+        var response = cadastrarProdutoUseCase.execute(produtoRequest);
+
+        assertNotNull(response);
+        assertFalse(response.estoqueCriado());
+        assertTrue(response.mensagemEstoque().contains("Serviço de estoque indisponível"));
+    }
+
+
+
 }

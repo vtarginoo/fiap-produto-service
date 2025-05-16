@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -34,8 +36,8 @@ public class CadastrarProdutoUseCaseImplTest {
 
     @Test
     void deveCadastrarProdutoComSucesso() {
-        var produtoRequest = new ProdutoRequest("Produto Teste", 100.0);
-        var produtoSalvo = new Produto(1L, "Produto Teste", "SKU123", 100.0);
+        var produtoRequest = new ProdutoRequest("Produto Teste", new BigDecimal("100.0"));
+        var produtoSalvo = new Produto(1L, "Produto Teste", "SKU123", new BigDecimal("100.0"));
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
 
@@ -44,14 +46,14 @@ public class CadastrarProdutoUseCaseImplTest {
         assertNotNull(response);
         assertEquals(1L, response.id());
         assertEquals("Produto Teste", response.nome());
-        assertEquals(100.0, response.preco());
+        assertEquals(new BigDecimal("100.0"), response.preco());
         verify(produtoRepository, times(1)).save(any(Produto.class));
     }
 
 
     @Test
     void deveLancarExcecao_QuandoErroAoSalvarNoBanco() {
-        var produtoRequest = new ProdutoRequest("Produto Erro", 50.0);
+        var produtoRequest = new ProdutoRequest("Produto Erro", new BigDecimal("50.0"));
 
         when(produtoRepository.save(any(Produto.class)))
                 .thenThrow(new RuntimeException("Erro ao salvar produto"));
@@ -65,8 +67,8 @@ public class CadastrarProdutoUseCaseImplTest {
 
     @Test
     void deveCadastrarProdutoEEstoqueComSucesso() {
-        var produtoRequest = new ProdutoRequest("Produto Teste", 100.0);
-        var produtoSalvo = new Produto(1L, "Produto Teste", "SKU123", 100.0);
+        var produtoRequest = new ProdutoRequest("Produto Teste", new BigDecimal("100.0"));
+        var produtoSalvo = new Produto(1L, "Produto Teste", "SKU123", new BigDecimal("100.0"));
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
         when(estoqueClient.cadastrarEstoque(any(EstoqueRequest.class)))
@@ -80,8 +82,8 @@ public class CadastrarProdutoUseCaseImplTest {
 
     @Test
     void deveCadastrarProdutoMasFalharNoEstoque() {
-        var produtoRequest = new ProdutoRequest("Produto com Erro no Estoque", 150.0);
-        var produtoSalvo = new Produto(2L, "Produto com Erro no Estoque", "SKU456", 150.0);
+        var produtoRequest = new ProdutoRequest("Produto com Erro no Estoque", new BigDecimal("150.0"));
+        var produtoSalvo = new Produto(2L, "Produto com Erro no Estoque", "SKU456", new BigDecimal("150.0"));
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoSalvo);
         when(estoqueClient.cadastrarEstoque(any(EstoqueRequest.class)))
@@ -93,7 +95,4 @@ public class CadastrarProdutoUseCaseImplTest {
         assertFalse(response.estoqueCriado());
         assertTrue(response.mensagemEstoque().contains("Serviço de estoque indisponível"));
     }
-
-
-
 }

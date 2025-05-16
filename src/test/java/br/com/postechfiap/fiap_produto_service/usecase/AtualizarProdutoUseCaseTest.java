@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,8 +33,8 @@ public class AtualizarProdutoUseCaseTest {
     @Test
     void deveAtualizarProdutoComSucesso() {
         // Arrange
-        var produtoExistente = new Produto(1L, "Produto Antigo", "SKU123", 100.0);
-        var atualizarProdutoDTO = new AtualizarProdutoDTO(1L, new ProdutoRequest("Produto Novo", 150.0));
+        var produtoExistente = new Produto(1L, "Produto Antigo", "SKU123", new BigDecimal("100.0"));
+        var atualizarProdutoDTO = new AtualizarProdutoDTO(1L, new ProdutoRequest("Produto Novo", new BigDecimal("150.0")));
 
         when(produtoRepository.findById(1L)).thenReturn(Optional.of(produtoExistente));
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoExistente);
@@ -45,7 +46,7 @@ public class AtualizarProdutoUseCaseTest {
         assertNotNull(response);
         assertEquals(1L, response.id());
         assertEquals("Produto Novo", response.nome());
-        assertEquals(150.0, response.preco());
+        assertEquals(new BigDecimal("150.0"), response.preco());
 
         verify(produtoRepository, times(1)).findById(1L);
         verify(produtoRepository, times(1)).save(produtoExistente);
@@ -54,7 +55,7 @@ public class AtualizarProdutoUseCaseTest {
     @Test
     void deveLancarExcecao_QuandoProdutoNaoEncontrado() {
         // Arrange
-        var atualizarProdutoDTO = new AtualizarProdutoDTO(99L, new ProdutoRequest("Produto Inexistente", 200.0));
+        var atualizarProdutoDTO = new AtualizarProdutoDTO(99L, new ProdutoRequest("Produto Inexistente", new BigDecimal("200.0")));
 
         when(produtoRepository.findById(99L)).thenReturn(Optional.empty());
 

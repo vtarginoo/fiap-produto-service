@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -38,8 +39,8 @@ public class Produto extends BaseEntity<Long> {
     @Setter
     @NotNull(message = "O preço é obrigatório.")
     @Positive(message = "O preço deve ser maior que zero.")
-    @Column(nullable = false)
-    private Double preco;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal preco;
 
     @PrePersist
     @PreUpdate

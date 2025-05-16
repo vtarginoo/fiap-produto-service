@@ -1,6 +1,9 @@
 package br.com.postechfiap.fiap_produto_service.controller;
 
-import br.com.postechfiap.fiap_produto_service.dto.*;
+import br.com.postechfiap.fiap_produto_service.dto.AtualizarProdutoDTO;
+import br.com.postechfiap.fiap_produto_service.dto.ListaProdutoResponse;
+import br.com.postechfiap.fiap_produto_service.dto.ProdutoRequest;
+import br.com.postechfiap.fiap_produto_service.dto.ProdutoResponse;
 import br.com.postechfiap.fiap_produto_service.entities.Produto;
 import br.com.postechfiap.fiap_produto_service.exception.produto.ProdutoNotFoundException;
 import br.com.postechfiap.fiap_produto_service.interfaces.ProdutoRepository;
@@ -18,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -58,13 +63,11 @@ class ProdutoControllerTest {
     @Test
     void deveCadastrarProdutoComSucesso() throws Exception {
         // Arrange
-        var produtoRequest = new ProdutoRequest("Produto Cadastrado", 100.0);
-        var criacaoProdutoResponse = new CriacaoProdutoResponse(2L, "Produto Cadastrado", "SKU123", 100.0,
-                true,
-                "Estoque cadastrado com sucesso.");
+        var produtoRequest = new ProdutoRequest("Produto Cadastrado", new BigDecimal("100.0"));
+        var produtoResponse = new ProdutoResponse(2L, "Produto Cadastrado", "SKU123", new BigDecimal("100.0"));
 
-        when(cadastrarProdutoUseCase.execute(any(ProdutoRequest.class)))
-                .thenReturn(criacaoProdutoResponse);
+        when(atualizarProdutoUseCase.execute(any(AtualizarProdutoDTO.class)))
+                .thenReturn(produtoResponse);
 
         // Act & Assert
         mockMvc.perform(post("/produto")
@@ -81,7 +84,7 @@ class ProdutoControllerTest {
     void deveBuscarProdutoComSucesso() throws Exception {
         // Arrange
         var listaProdutoResponse = new ListaProdutoResponse(
-                List.of(new ProdutoResponse(1L, "Cadeira Gamer Ergonômica", "CAD-GAM-ERG6", 599.0)));
+                List.of(new ProdutoResponse(1L, "Cadeira Gamer Ergonômica", "CAD-GAM-ERG6", new BigDecimal("599.0"))));
 
         when(buscarProdutoUseCase.execute("Cadeira")).thenReturn(listaProdutoResponse);
 
@@ -106,8 +109,8 @@ class ProdutoControllerTest {
     @DisplayName("3.1 Atualizar Produto - Sucesso")
     void deveAtualizarProdutoComSucesso() throws Exception {
         // Arrange
-        var produtoRequest = new ProdutoRequest("Produto Atualizado", 150.0);
-        var produtoResponse = new ProdutoResponse(4L, "Produto Atualizado", "SKU123", 150.0);
+        var produtoRequest = new ProdutoRequest("Produto Atualizado", new BigDecimal("150.0"));
+        var produtoResponse = new ProdutoResponse(4L, "Produto Atualizado", "SKU123", new BigDecimal("150.0"));
 
         when(atualizarProdutoUseCase.execute(any(AtualizarProdutoDTO.class)))
                 .thenReturn(produtoResponse);
@@ -147,7 +150,7 @@ class ProdutoControllerTest {
     @DisplayName("4.1 Deletar Produto - Sucesso")
     void deveDeletarProdutoComSucesso() throws Exception {
         // Arrange
-        var produtoReposicao = Produto.builder().nome("Mesa de Cabeceira").preco(100.0).build();
+        var produtoReposicao = Produto.builder().nome("Mesa de Cabeceira").preco(new BigDecimal("100.0")).build();
 
          produtoReposicao = produtoRepository.save(produtoReposicao);
 

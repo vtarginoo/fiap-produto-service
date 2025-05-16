@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +30,7 @@ public class DeletarProdutoUseCaseTest {
     void deveDeletarProdutoComSucesso() {
         // Arrange
         Long produtoId = 1L;
-        var produtoExistente = new Produto(produtoId, "Produto Teste", "SKU123", 100.0);
+        var produtoExistente = new Produto(produtoId, "Produto Teste", "SKU123", new BigDecimal("100.0"));
 
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produtoExistente));
         doNothing().when(produtoRepository).delete(produtoExistente);

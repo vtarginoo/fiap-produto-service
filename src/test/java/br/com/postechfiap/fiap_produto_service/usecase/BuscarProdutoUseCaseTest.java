@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,8 +32,8 @@ public class BuscarProdutoUseCaseTest {
         // Arrange (Preparação)
         String query = "Produto Teste";
         List<Produto> produtosMock = List.of(
-                new Produto(1L, "Produto Teste", "SKU123", 100.0),
-                new Produto(2L, "Outro Produto", "SKU456", 200.0)
+                new Produto(1L, "Produto Teste", "SKU123", new BigDecimal("100.0")),
+                new Produto(2L, "Outro Produto", "SKU456", new BigDecimal("200.0"))
         );
 
         // Simulação do comportamento do repositório

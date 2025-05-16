@@ -74,8 +74,4 @@ public class ProdutoController {
         String mensagem = deletarProdutoUseCase.execute(id);
         return ResponseEntity.ok(mensagem);
     }
-
-
-
-
 }
